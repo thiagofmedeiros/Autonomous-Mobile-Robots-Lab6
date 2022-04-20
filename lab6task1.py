@@ -17,6 +17,8 @@ SOUTH = math.pi
 WEST = math.pi / 2
 EAST = -math.pi / 2
 
+MAX_DISTANCE_WALL = 7
+
 DIRECTIONS = [WEST, NORTH, EAST, SOUTH]
 
 # map of labyrinth
@@ -145,8 +147,6 @@ def correctDirection(desiredDirection):
 
 # rotates the robot to measure the walls around it
 def getWalls():
-    MAX_DISTANCE_WALL = 7
-
     correctDirection(NORTH)
     north, west, east = getSensors()
 
@@ -234,14 +234,85 @@ def randomChooseDirection(walls):
     return random.choice(directions)
 
 
+def chooseDirection(walls, direction):
+    # Follow right wall
+    if direction == NORTH:
+        if walls[2]:
+            # X|
+            if not walls[1]:
+                return NORTH
+            else:
+                # _
+                # X|
+                if not walls[0]:
+                    return WEST
+                #  _
+                # |X|
+                else:
+                    return SOUTH
+        else:
+            # Lost right wall
+            return EAST
+    elif direction == EAST:
+        if walls[3]:
+            # X_
+            if not walls[2]:
+                return EAST
+            else:
+                # X_|
+                if not walls[1]:
+                    return NORTH
+                else:
+                    # __
+                    # X_|
+                    return WEST
+        else:
+            # Lost right wall
+            return SOUTH
+    elif direction == WEST:
+        if walls[1]:
+            # _
+            # X
+            if not walls[0]:
+                return WEST
+            else:
+                #  _
+                # |X
+                if not walls[3]:
+                    return SOUTH
+                else:
+                    #  __
+                    # |X_
+                    return EAST
+        else:
+            # Lost right wall
+            return NORTH
+    else:
+        if walls[0]:
+            # |X
+            if not walls[3]:
+                return SOUTH
+            else:
+                # |X_
+                if not walls[2]:
+                    return EAST
+                else:
+                    # |X_|
+                    return NORTH
+        else:
+            # Lost South wall
+            return WEST
+
+
 # move robot 1 cell or
 # up to the middle of the sema cell
-def move1Cell(position):
+def move1Cell(position, direction):
     global time
 
     walls = labyrinth[position]
 
-    direction = randomChooseDirection(walls)
+    # direction = randomChooseDirection(walls)
+    direction = chooseDirection(walls, direction)
 
     correctDirection(direction)
 
@@ -260,7 +331,7 @@ def move1Cell(position):
 
         distanceTraveled += abs(frontPrevious - front)
 
-    return getNewPosition(direction, position)
+    return getNewPosition(direction, position), direction
 
 
 # verify if all cells have been marked as traversed
@@ -288,6 +359,7 @@ currentCell = 24
 cells[currentCell] = True
 # update walls
 labyrinth[currentCell] = getWalls()
+direction = EAST
 # print labyrinth
 printData(cells, currentCell)
 
@@ -298,4 +370,4 @@ while not isAllCellsCovered(cells):  # and time < MAX_SIMULATION_TIME:
         labyrinth[currentCell] = getWalls()
         printData(cells, currentCell)
     else:
-        currentCell = move1Cell(currentCell)
+        currentCell, direction = move1Cell(currentCell, direction)
