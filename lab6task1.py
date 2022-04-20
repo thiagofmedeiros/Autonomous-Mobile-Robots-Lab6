@@ -4,11 +4,8 @@ from controller import Robot, Camera, CameraRecognitionObject, InertialUnit, Dis
 import math
 import random
 
-WHEEL_DIST = 1.05
-WHEEL_DIAMETER = 1.6
 MAX_PHI = 2.5
 MAX_SIMULATION_TIME = 30 * 60 * 1000
-MAX_MEASURED_DISTANCE = 1.27
 ACCEPTED_ERROR = 0.001
 K = 10
 
@@ -21,29 +18,13 @@ MAX_DISTANCE_WALL = 7
 
 DIRECTIONS = [WEST, NORTH, EAST, SOUTH]
 
-# map of labyrinth
-# labyrinth = [(True, True, False, True),  # 01
-#              (False, True, False, True),  # 02
-#              (False, True, False, False),  # 03
-#              (False, True, True, False),  # 04
-#              (True, True, False, False),  # 05
-#              (False, True, True, False),  # 06
-#              (True, False, True, False),  # 07
-#              (True, False, True, False),  # 08
-#              (True, False, True, False),  # 09
-#              (True, False, False, True),  # 10
-#              (False, False, True, True),  # 11
-#              (True, False, True, False),  # 12
-#              (True, False, False, True),  # 13
-#              (False, True, False, True),  # 14
-#              (False, True, False, True),  # 15
-#              (False, False, True, True)  # 16
-#              ]
+LABYRINTH_SIZE_X = 7
+LABYRINTH_SIZE_Y = 7
 
-labyrinth = [(False, False, False, False)] * 7 * 7
+labyrinth = [(False, False, False, False)] * LABYRINTH_SIZE_X * LABYRINTH_SIZE_Y
 
 # init cell matrix
-cells = [False] * 7 * 7
+cells = [False] * LABYRINTH_SIZE_X * LABYRINTH_SIZE_Y
 
 # create the Robot instance.
 robot = Robot()
@@ -163,11 +144,11 @@ def getNewPosition(direction, position):
     if direction == WEST:
         position -= 1
     elif direction == NORTH:
-        position -= 7
+        position -= LABYRINTH_SIZE_X
     elif direction == EAST:
         position += 1
     elif direction == SOUTH:
-        position += 7
+        position += LABYRINTH_SIZE_X
 
     return position
 
@@ -195,7 +176,7 @@ def printData(map, cell):
         print("____", end="")
     print("")
 
-    for i in range(7 * 7):
+    for i in range(LABYRINTH_SIZE_X * LABYRINTH_SIZE_Y):
 
         if labyrinth[i][0]:
             print("|", end="")
@@ -347,6 +328,15 @@ def isAllCellsCovered(map):
         return False
 
 
+def isCellVisited(cell):
+    return cells[cell]
+
+
+def markCellAsVisited(cell):
+    cells[cell] = True
+    labyrinth[cell] = getWalls()
+
+
 # First step to get sensor readings
 robot.step(timestep)
 time += timestep
@@ -355,19 +345,17 @@ yaw = getYawRadians()
 
 # middle of map
 currentCell = 24
-# mark as visited
-cells[currentCell] = True
-# update walls
-labyrinth[currentCell] = getWalls()
+
+markCellAsVisited(currentCell)
+
 direction = EAST
 # print labyrinth
 printData(cells, currentCell)
 
 # execute until map is covered or 3 minutes
 while not isAllCellsCovered(cells):  # and time < MAX_SIMULATION_TIME:
-    if cells[currentCell] == False:
-        cells[currentCell] = True
-        labyrinth[currentCell] = getWalls()
-        printData(cells, currentCell)
-    else:
+    if isCellVisited(currentCell):
         currentCell, direction = move1Cell(currentCell, direction)
+    else:
+        markCellAsVisited(currentCell)
+        printData(cells, currentCell)
