@@ -215,9 +215,9 @@ def randomChooseDirection(walls):
     return random.choice(directions)
 
 
-def chooseDirection(walls, direction):
+def chooseDirection(walls, previousDirection):
     # Follow right wall
-    if direction == NORTH:
+    if previousDirection == NORTH:
         if walls[2]:
             # X|
             if not walls[1]:
@@ -234,7 +234,7 @@ def chooseDirection(walls, direction):
         else:
             # Lost right wall
             return EAST
-    elif direction == EAST:
+    elif previousDirection == EAST:
         if walls[3]:
             # X_
             if not walls[2]:
@@ -250,7 +250,7 @@ def chooseDirection(walls, direction):
         else:
             # Lost right wall
             return SOUTH
-    elif direction == WEST:
+    elif previousDirection == WEST:
         if walls[1]:
             # _
             # X
