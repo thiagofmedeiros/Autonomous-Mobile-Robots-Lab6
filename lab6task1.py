@@ -341,8 +341,6 @@ def markCellAsVisited(cell):
 robot.step(timestep)
 time += timestep
 
-yaw = getYawRadians()
-
 # middle of map
 currentCell = 24
 
