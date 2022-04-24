@@ -2,7 +2,6 @@
 #  from controller import Robot, Motor, DistanceSensor
 from controller import Robot, Camera, CameraRecognitionObject, InertialUnit, DistanceSensor, PositionSensor
 import math
-import random
 
 MAX_PHI = 2.5
 MAX_SIMULATION_TIME = 30 * 60 * 1000
@@ -94,21 +93,8 @@ rightMotor.setVelocity(0)
 time = 0
 
 
-def inchesToMeters(x):
-    return x / 39.37
-
-
 def metersToInches(x):
     return x * 39.37
-
-
-def getYawDegrees():
-    Yaw = math.degrees(getYawRadians())
-
-    if Yaw < 0:
-        Yaw = Yaw + 360
-
-    return Yaw
 
 
 def getYawRadians():
@@ -152,19 +138,6 @@ def correctDirection(desiredDirection):
         time += timestep
 
         error = getYawRadians() - desiredDirection
-
-
-# rotates the robot to measure the walls around it
-def getWalls():
-    correctDirection(NORTH)
-    north, west, east = getSensors()
-
-    correctDirection(EAST)
-    _, _, south = getSensors()
-
-    walls = (west < MAX_DISTANCE_WALL, north < MAX_DISTANCE_WALL, east < MAX_DISTANCE_WALL, south < MAX_DISTANCE_WALL)
-
-    return walls
 
 
 # returns the next position given a current location and the movement direction
