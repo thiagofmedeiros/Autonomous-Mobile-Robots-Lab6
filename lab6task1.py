@@ -2,7 +2,6 @@
 #  from controller import Robot, Motor, DistanceSensor
 from controller import Robot, Camera, CameraRecognitionObject, InertialUnit, DistanceSensor, PositionSensor
 import math
-import random
 
 MAX_PHI = 2.5
 MAX_SIMULATION_TIME = 30 * 60 * 1000
