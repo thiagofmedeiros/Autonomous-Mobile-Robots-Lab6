@@ -172,7 +172,7 @@ def canMove(direction, walls):
 def printData(map, cell):
     # print("Cell {0}".format(cell))
     # print("Position: ({0:.2f}, {1:.2f}) Yaw: {2:.2f})".format(x, y, yaw))
-    for i in range(7):
+    for i in range(LABYRINTH_SIZE_X):
         print("____", end="")
     print("")
 
@@ -198,7 +198,7 @@ def printData(map, cell):
         else:
             print(" ", end="")
 
-        if (i + 1) % 7 == 0:
+        if (i + 1) % LABYRINTH_SIZE_X == 0:
             print("")
     # print("({0:.2f}, {1:.2f}, {2}, {3:.2f})".format(X[cell], Y[cell], cell + 1, getYawRadians()))
 
