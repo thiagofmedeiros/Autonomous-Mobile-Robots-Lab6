@@ -66,21 +66,8 @@ rightMotor.setVelocity(0)
 time = 0
 
 
-def inchesToMeters(x):
-    return x / 39.37
-
-
 def metersToInches(x):
     return x * 39.37
-
-
-def getYawDegrees():
-    Yaw = math.degrees(getYawRadians())
-
-    if Yaw < 0:
-        Yaw = Yaw + 360
-
-    return Yaw
 
 
 def getYawRadians():
@@ -169,9 +156,7 @@ def canMove(direction, walls):
 
 
 # Print data from pose
-def printData(map, cell):
-    # print("Cell {0}".format(cell))
-    # print("Position: ({0:.2f}, {1:.2f}) Yaw: {2:.2f})".format(x, y, yaw))
+def printData(map):
     for i in range(LABYRINTH_SIZE_X):
         print("____", end="")
     print("")
@@ -200,19 +185,6 @@ def printData(map, cell):
 
         if (i + 1) % LABYRINTH_SIZE_X == 0:
             print("")
-    # print("({0:.2f}, {1:.2f}, {2}, {3:.2f})".format(X[cell], Y[cell], cell + 1, getYawRadians()))
-
-
-# randomly choose direction
-# from possible movements
-def randomChooseDirection(walls):
-    directions = []
-
-    for i in range(len(DIRECTIONS)):
-        if canMove(DIRECTIONS[i], walls):
-            directions.append(DIRECTIONS[i])
-
-    return random.choice(directions)
 
 
 def chooseDirection(walls, previousDirection):
@@ -292,7 +264,6 @@ def move1Cell(position, direction):
 
     walls = labyrinth[position]
 
-    # direction = randomChooseDirection(walls)
     direction = chooseDirection(walls, direction)
 
     correctDirection(direction)
@@ -348,7 +319,7 @@ markCellAsVisited(currentCell)
 
 direction = EAST
 # print labyrinth
-printData(cells, currentCell)
+printData(cells)
 
 # execute until map is covered or 3 minutes
 while not isAllCellsCovered(cells):  # and time < MAX_SIMULATION_TIME:
@@ -356,4 +327,4 @@ while not isAllCellsCovered(cells):  # and time < MAX_SIMULATION_TIME:
         currentCell, direction = move1Cell(currentCell, direction)
     else:
         markCellAsVisited(currentCell)
-        printData(cells, currentCell)
+        printData(cells)
