@@ -322,7 +322,7 @@ def isAllCellsCovered(map):
         if cell == True:
             count += 1
 
-    if count == 16:
+    if count == LABYRINTH_SIZE_X * LABYRINTH_SIZE_Y:
         return True
     else:
         return False
