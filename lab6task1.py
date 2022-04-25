@@ -154,7 +154,7 @@ def canMove(direction, walls):
         return not walls[3]
 
 
-def printMap(map):
+def printMap(map, final=False):
     for i in range(LABYRINTH_SIZE_X):
         print("____", end="")
     print("")
@@ -168,7 +168,7 @@ def printMap(map):
 
         if map[i]:
             print("X", end="")
-        else:
+        elif not final:
             print(".", end="")
 
         if labyrinth[i][3]:
@@ -327,3 +327,7 @@ while not isAllCellsCovered(cells) and time < MAX_SIMULATION_TIME:
     else:
         markCellAsVisited(currentCell)
         printMap(cells)
+
+setSpeedsRPS(0, 0)
+
+printMap(cells, final=True)
