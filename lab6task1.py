@@ -154,8 +154,7 @@ def canMove(direction, walls):
         return not walls[3]
 
 
-# Print data from pose
-def printData(map):
+def printMap(map):
     for i in range(LABYRINTH_SIZE_X):
         print("____", end="")
     print("")
@@ -186,6 +185,7 @@ def printData(map):
             print("")
 
 
+# Choose direction for right wall following
 def chooseDirection(walls, previousDirection):
     # Follow right wall
     if previousDirection == NORTH:
@@ -257,13 +257,13 @@ def chooseDirection(walls, previousDirection):
 
 
 # move robot 1 cell or
-# up to the middle of the sema cell
-def move1Cell(position, direction):
+# up to the middle of the same cell
+def move1Cell(position, previousDirection):
     global time
 
     walls = labyrinth[position]
 
-    direction = chooseDirection(walls, direction)
+    direction = chooseDirection(walls, previousDirection)
 
     correctDirection(direction)
 
@@ -318,12 +318,12 @@ markCellAsVisited(currentCell)
 
 direction = EAST
 # print labyrinth
-printData(cells)
+printMap(cells)
 
 # execute until map is covered or 3 minutes
-while not isAllCellsCovered(cells):  # and time < MAX_SIMULATION_TIME:
+while not isAllCellsCovered(cells) and time < MAX_SIMULATION_TIME:
     if isCellVisited(currentCell):
         currentCell, direction = move1Cell(currentCell, direction)
     else:
         markCellAsVisited(currentCell)
-        printData(cells)
+        printMap(cells)

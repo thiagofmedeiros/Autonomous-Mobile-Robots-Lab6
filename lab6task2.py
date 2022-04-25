@@ -169,10 +169,7 @@ def canMove(direction, walls):
         return not walls[3]
 
 
-# Print data from pose
 def printWaveFrontPlan():
-    # print("Cell {0}".format(cell))
-    # print("Position: ({0:.2f}, {1:.2f}) Yaw: {2:.2f})".format(x, y, yaw))
     for i in range(LABYRINTH_SIZE_X * LABYRINTH_SIZE_Y):
 
         print(cells[i], end="\t")
@@ -180,11 +177,9 @@ def printWaveFrontPlan():
         if (i + 1) % LABYRINTH_SIZE_X == 0:
             print("")
     print("")
-    # print("({0:.2f}, {1:.2f}, {2}, {3:.2f})".format(X[cell], Y[cell], cell + 1, getYawRadians()))
 
 
-# randomly choose direction
-# from possible movements
+# choose direction with minor cost
 def chooseDirection(position):
     minimum = LABYRINTH_SIZE_X * LABYRINTH_SIZE_Y
     chosenDirection = EAST
@@ -200,14 +195,11 @@ def chooseDirection(position):
 
 
 # move robot 1 cell or
-# up to the middle of the sema cell
+# up to the middle of the same cell
 def move1Cell(position):
     global time
 
-    walls = labyrinth[position]
-
     direction = chooseDirection(position)
-    # direction = chooseDirection(walls, direction)
 
     correctDirection(direction)
 
@@ -236,19 +228,48 @@ def isAllCellsCalculated():
     return True
 
 
-def calculateWaveFront(count):
+def getPossibleDirectionsToMove(cell):
+    directions = []
+
+    for direction in DIRECTIONS:
+        if canMove(direction, labyrinth[cell]):
+            directions.append(direction)
+
+    return directions
+
+
+def isCellToUpdate(cell, count):
+    return cells[cell] == count
+
+
+def updateAdjacentCells(cell, count):
+    directions = getPossibleDirectionsToMove(cell)
+    for direction in directions:
+        next_cell = getNewPosition(direction, cell)
+
+        if cells[next_cell] == NOT_CALCULATED:
+            cells[next_cell] = count + 1
+
+
+def searchCellsToUpdate(count):
+    cellsToUpdate = []
+    for cell in range(len(cells)):
+        if isCellToUpdate(cell, count):
+            cellsToUpdate.append(cell)
+
+    return cellsToUpdate
+
+
+def calculateWaveFront():
+    count = 2
 
     while not isAllCellsCalculated():
-        for i in range(len(cells)):
-            if cells[i] == count:
-                for direction in DIRECTIONS:
-                    if canMove(direction, labyrinth[i]):
-                        next_cell = getNewPosition(direction, i)
-                        if cells[next_cell] == NOT_CALCULATED:
-                            cells[next_cell] = count + 1
-        count += 1
+        cellsToUpdate = searchCellsToUpdate(count)
 
-    printWaveFrontPlan()
+        for cell in cellsToUpdate:
+            updateAdjacentCells(cell, count)
+
+        count += 1
 
 
 # First step to get sensor readings
@@ -261,15 +282,13 @@ goalCell = 4
 
 cells[goalCell - 1] = 2
 
-current_count = 2
-
 currentCell = initCell - 1
 
-calculateWaveFront(current_count)
+calculateWaveFront()
 
-# print labyrinth
+printWaveFrontPlan()
 
 # execute until map is covered or 3 minutes
-while not currentCell == goalCell - 1:  # and time < MAX_SIMULATION_TIME:
+while not currentCell == goalCell - 1:
     currentCell = move1Cell(currentCell)
     print("({0:.2f}, {1:.2f}, {2}, {3:.2f})".format(X[currentCell], Y[currentCell], currentCell + 1, getYawRadians()))
